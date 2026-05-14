@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Slotly – Randevunu Saniyeler İçinde Al</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --ink: #0d0d12;
+  --ink-soft: #42455a;
+  --ink-muted: #888ba4;
+  --surface: #ffffff;
+  --bg: #f6f7fb;
+  --brand: #7c3aed;
+  --brand-dark: #5b21b6;
+  --brand-light: #f0ebff;
+  --brand-mid: #ddd6fe;
+  --accent: #10b981;
+  --accent-light: #d1fae5;
+  --warm: #f59e0b;
+  --warm-light: #fef3c7;
+  --red: #ef4444;
+  --border: rgba(0,0,0,0.07);
+  --border-med: rgba(0,0,0,0.12);
+}
+html { scroll-behavior: smooth; }
+body { font-family: 'Sora', sans-serif; background: var(--surface); color: var(--ink); line-height: 1.6; }
+a { text-decoration: none; color: inherit; }
+
+/* NAV */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(255,255,255,0.92); backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 40px; height: 62px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.logo { font-family: 'Lora', serif; font-size: 24px; color: var(--brand); font-weight: 600; }
+.logo span { color: var(--accent); }
+.nav-links { display: flex; gap: 28px; }
+.nav-links a { font-size: 14px; font-weight: 500; color: var(--ink-soft); }
+.nav-links a:hover { color: var(--brand); }
+.nav-cta { background: var(--brand); color: #fff; border-radius: 40px; padding: 9px 22px; font-size: 14px; font-weight: 600; border: none; cursor: pointer; }
+
+/* HERO */
+.hero {
+  padding: 130px 40px 100px;
+  background: linear-gradient(170deg, #f5f0ff 0%, #f6f7fb 50%, #edfdf5 100%);
+  text-align: center; position: relative; overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute; top: -100px; left: 50%; transform: translateX(-50%);
+  width: 800px; height: 500px; border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(124,58,237,0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-eyebrow { display: inline-flex; align-items: center; gap: 8px; background: var(--brand-light); color: var(--brand); border-radius: 40px; padding: 6px 16px; font-size: 13px; font-weight: 600; margin-bottom: 28px; }
+.hero-eyebrow .dot { width: 6px; height: 6px; background: var(--brand); border-radius: 50%; animation: blink 2s infinite; }
+@keyframes blink { 0%,100%{opacity:1;}50%{opacity:.3;} }
+h1 { font-family: 'Lora', serif; font-size: 58px; line-height: 1.1; letter-spacing: -1px; margin-bottom: 22px; max-width: 780px; margin-left: auto; margin-right: auto; }
+h1 em { font-style: italic; color: var(--brand); }
+h1 strong { color: var(--accent); font-style: normal; font-family: 'Sora', sans-serif; font-size: 52px; }
+.hero-sub { font-size: 19px; color: var(--ink-soft); max-width: 520px; margin: 0 auto 40px; line-height: 1.75; }
+.hero-search {
+  display: flex; align-items: center; gap: 0;
+  background: #fff; border: 1.5px solid var(--border-med);
+  border-radius: 60px; padding: 6px 6px 6px 24px;
+  max-width: 520px; margin: 0 auto 20px;
+  box-shadow: 0 8px 40px rgba(124,58,237,0.1);
+}
+.hero-search input { flex: 1; border: none; outline: none; font-size: 15px; font-family: 'Sora', sans-serif; color: var(--ink); background: transparent; }
+.hero-search input::placeholder { color: var(--ink-muted); }
+.search-btn { background: var(--brand); color: #fff; border: none; border-radius: 50px; padding: 12px 24px; font-size: 14px; font-weight: 700; cursor: pointer; white-space: nowrap; font-family: 'Sora', sans-serif; }
+.popular-tags { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 56px; }
+.tag { background: var(--bg); border: 1px solid var(--border-med); border-radius: 40px; padding: 6px 14px; font-size: 13px; font-weight: 500; color: var(--ink-soft); cursor: pointer; }
+.tag:hover { border-color: var(--brand); color: var(--brand); background: var(--brand-light); }
+
+/* APP PREVIEW CARDS */
+.preview-row { display: flex; gap: 16px; justify-content: center; align-items: flex-end; flex-wrap: nowrap; }
+.preview-card {
+  background: #fff; border-radius: 20px; border: 1px solid var(--border);
+  box-shadow: 0 12px 48px rgba(0,0,0,0.07);
+  padding: 20px; width: 220px; flex-shrink: 0;
+  text-align: left; position: relative;
+}
+.preview-card.center { width: 260px; box-shadow: 0 20px 70px rgba(124,58,237,0.13); border-color: var(--brand-mid); transform: translateY(-20px); }
+.preview-card.side { opacity: .85; }
+.pc-icon { font-size: 26px; margin-bottom: 10px; }
+.pc-name { font-size: 13px; font-weight: 700; margin-bottom: 2px; }
+.pc-cat { font-size: 11px; color: var(--ink-muted); margin-bottom: 12px; }
+.pc-stars { font-size: 12px; color: var(--warm); margin-bottom: 10px; letter-spacing: 1px; }
+.pc-slots { display: flex; gap: 6px; flex-wrap: wrap; }
+.pc-slot { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 5px 8px; font-size: 11px; font-weight: 600; color: var(--ink-soft); }
+.pc-slot.open { background: var(--brand-light); border-color: var(--brand-mid); color: var(--brand); }
+.pc-fee { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.pc-fee-label { font-size: 11px; color: var(--ink-muted); }
+.pc-fee-amount { font-size: 13px; font-weight: 700; color: var(--brand); }
+.pc-cta { width: 100%; margin-top: 12px; background: var(--brand); color: #fff; border: none; border-radius: 10px; padding: 10px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: 'Sora', sans-serif; }
+
+/* STATS */
+.stats { background: var(--brand); padding: 56px 40px; }
+.stats-inner { max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; text-align: center; }
+.stat-num { font-family: 'Lora', serif; font-size: 42px; font-weight: 600; color: #fff; }
+.stat-label { font-size: 13px; color: rgba(255,255,255,.65); margin-top: 4px; }
+
+/* NASIL ÇALIŞIR */
+.how { padding: 96px 40px; background: var(--bg); }
+.section-inner { max-width: 1100px; margin: 0 auto; }
+.section-tag { display: inline-block; background: var(--brand-light); color: var(--brand); font-size: 11px; font-weight: 700; letter-spacing: .8px; text-transform: uppercase; border-radius: 40px; padding: 5px 14px; margin-bottom: 16px; }
+h2 { font-family: 'Lora', serif; font-size: 40px; line-height: 1.15; letter-spacing: -0.5px; margin-bottom: 12px; }
+.section-sub { font-size: 17px; color: var(--ink-soft); max-width: 500px; line-height: 1.7; margin-bottom: 56px; }
+.how-steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; background: var(--border); border-radius: 20px; overflow: hidden; border: 1px solid var(--border); }
+.how-step { background: var(--surface); padding: 36px 24px; position: relative; }
+.how-num { font-family: 'Lora', serif; font-size: 56px; color: var(--brand-light); line-height: 1; margin-bottom: 16px; }
+.how-icon { font-size: 28px; margin-bottom: 14px; }
+.how-step h3 { font-size: 15px; font-weight: 700; margin-bottom: 8px; }
+.how-step p { font-size: 13px; color: var(--ink-soft); line-height: 1.7; }
+.how-arrow { position: absolute; right: -1px; top: 50%; transform: translateY(-50%); width: 28px; height: 28px; background: var(--brand-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; z-index: 1; }
+
+/* SEKTÖRLER */
+.sectors { padding: 96px 40px; background: var(--surface); }
+.sector-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 52px; }
+.sector-card { background: var(--bg); border: 1px solid var(--border); border-radius: 18px; padding: 28px 20px; text-align: center; cursor: pointer; transition: all .2s; }
+.sector-card:hover { border-color: var(--brand); background: var(--brand-light); transform: translateY(-3px); }
+.sector-icon { font-size: 36px; margin-bottom: 12px; }
+.sector-name { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+.sector-count { font-size: 12px; color: var(--ink-muted); }
+
+/* ÜCRET */
+.fee-section { padding: 96px 40px; background: var(--bg); }
+.fee-inner { max-width: 860px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; }
+.fee-visual { background: var(--surface); border: 1px solid var(--border); border-radius: 24px; padding: 32px; box-shadow: 0 12px 48px rgba(0,0,0,0.06); }
+.fee-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid var(--border); }
+.fee-row:last-of-type { border-bottom: none; }
+.fee-row-label { font-size: 14px; color: var(--ink-soft); display: flex; align-items: center; gap: 8px; }
+.fee-row-value { font-size: 15px; font-weight: 700; }
+.fee-total { background: var(--brand-light); border-radius: 14px; padding: 16px; margin-top: 16px; display: flex; justify-content: space-between; align-items: center; }
+.fee-total-label { font-size: 14px; font-weight: 600; color: var(--brand); }
+.fee-total-amount { font-size: 22px; font-weight: 800; color: var(--brand); }
+.fee-text h2 { margin-bottom: 16px; }
+.fee-text p { font-size: 16px; color: var(--ink-soft); line-height: 1.7; margin-bottom: 20px; }
+.fee-pill { display: inline-flex; align-items: center; gap: 8px; background: var(--accent-light); color: #065f46; border-radius: 40px; padding: 8px 18px; font-size: 14px; font-weight: 700; }
+
+/* ÖZELLIKLER */
+.features { padding: 96px 40px; background: var(--surface); }
+.feat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 52px; }
+.feat-card { background: var(--bg); border: 1px solid var(--border); border-radius: 18px; padding: 28px; }
+.feat-icon { font-size: 28px; margin-bottom: 14px; }
+.feat-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 8px; }
+.feat-card p { font-size: 13px; color: var(--ink-soft); line-height: 1.7; }
+
+/* YORUMLAR */
+.reviews { padding: 96px 40px; background: var(--bg); }
+.review-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 52px; }
+.review-card { background: var(--surface); border: 1px solid var(--border); border-radius: 18px; padding: 26px; }
+.r-stars { color: var(--warm); font-size: 13px; margin-bottom: 12px; }
+.r-text { font-size: 14px; color: var(--ink-soft); line-height: 1.75; margin-bottom: 18px; font-style: italic; }
+.r-user { display: flex; align-items: center; gap: 10px; }
+.r-avatar { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #fff; flex-shrink: 0; }
+.r-name { font-size: 13px; font-weight: 700; }
+.r-sub { font-size: 11px; color: var(--ink-muted); }
+
+/* CTA */
+.cta-section { padding: 100px 40px; text-align: center; background: linear-gradient(160deg, #f5f0ff 0%, #edfdf5 100%); }
+.cta-section h2 { font-family: 'Lora', serif; font-size: 46px; margin-bottom: 14px; }
+.cta-section p { font-size: 18px; color: var(--ink-soft); margin-bottom: 36px; }
+.cta-actions { display: flex; gap: 14px; justify-content: center; }
+.btn-brand { background: var(--brand); color: #fff; border: none; border-radius: 40px; padding: 15px 34px; font-size: 16px; font-weight: 700; cursor: pointer; font-family: 'Sora', sans-serif; }
+.btn-brand:hover { background: var(--brand-dark); }
+.btn-outline { border: 1.5px solid var(--border-med); color: var(--ink-soft); background: transparent; border-radius: 40px; padding: 13px 28px; font-size: 15px; font-weight: 500; cursor: pointer; font-family: 'Sora', sans-serif; }
+.store-badges { margin-top: 28px; display: flex; gap: 12px; justify-content: center; }
+.store-badge { background: var(--ink); color: #fff; border-radius: 12px; padding: 10px 20px; display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 600; cursor: pointer; }
+.store-badge .si { font-size: 20px; }
+
+/* FOOTER */
+footer { background: var(--ink); color: rgba(255,255,255,.45); padding: 40px; text-align: center; font-size: 13px; }
+.foot-logo { font-family: 'Lora', serif; font-size: 22px; color: #fff; margin-bottom: 8px; }
+.foot-logo span { color: var(--accent); }
+.foot-links { margin-top: 14px; display: flex; gap: 24px; justify-content: center; }
+.foot-links a { color: rgba(255,255,255,.35); font-size: 12px; }
+
+@media (max-width: 900px) {
+  h1 { font-size: 36px; }
+  .preview-row .side { display: none; }
+  .preview-card.center { width: 100%; max-width: 300px; transform: none; }
+  .stats-inner, .how-steps, .sector-grid, .feat-grid, .review-grid { grid-template-columns: 1fr 1fr; }
+  .fee-inner { grid-template-columns: 1fr; }
+  nav { padding: 0 20px; }
+  .nav-links { display: none; }
+  .how { padding: 60px 20px; }
+  .sectors, .features, .reviews, .fee-section, .cta-section { padding: 60px 20px; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">Slotly<span>.</span></div>
+  <div class="nav-links">
+    <a href="#nasil">Nasıl Çalışır</a>
+    <a href="#sektorler">Sektörler</a>
+    <a href="#ucret">Ücretler</a>
+    <a href="#yorumlar">Yorumlar</a>
+  </div>
+  <button class="nav-cta">Uygulamayı İndir</button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-eyebrow">
+    <span class="dot"></span>
+    Türkiye'nin randevu uygulaması
+  </div>
+  <h1>Yakınındaki her işletmeden <em>anında</em> randevu al</h1>
+  <p class="hero-sub">Berber, diş kliniği, halı saha, SPA… Tek uygulamadan ara, bul, randevu al. Küçük işlem ücreti, büyük kolaylık.</p>
+
+  <div class="hero-search">
+    <input type="text" placeholder="Berber, diş kliniği, halı saha…">
+    <button class="search-btn">Ara 🔍</button>
+  </div>
+
+  <div class="popular-tags">
+    <span class="tag">✂️ Berber</span>
+    <span class="tag">🦷 Diş</span>
+    <span class="tag">⚽ Halı Saha</span>
+    <span class="tag">💆 Masaj</span>
+    <span class="tag">💅 Kuaför</span>
+    <span class="tag">🐾 Veteriner</span>
+  </div>
+
+  <div class="preview-row">
+    <div class="preview-card side">
+      <div class="pc-icon">💆</div>
+      <div class="pc-name">Zen SPA & Masaj</div>
+      <div class="pc-cat">Masaj · Çankaya, Ankara</div>
+      <div class="pc-stars">★★★★★ 4.9</div>
+      <div class="pc-slots">
+        <div class="pc-slot">14:00</div>
+        <div class="pc-slot open">15:30</div>
+        <div class="pc-slot open">17:00</div>
+      </div>
+      <div class="pc-fee">
+        <div class="pc-fee-label">İşlem ücreti</div>
+        <div class="pc-fee-amount">+₺9</div>
+      </div>
+    </div>
+
+    <div class="preview-card center">
+      <div class="pc-icon">✂️</div>
+      <div class="pc-name">Berber Mahmut</div>
+      <div class="pc-cat">Erkek Kuaförü · Keçiören, Ankara</div>
+      <div class="pc-stars">★★★★★ 5.0</div>
+      <div class="pc-slots">
+        <div class="pc-slot">09:00</div>
+        <div class="pc-slot open">11:00</div>
+        <div class="pc-slot open">13:00</div>
+        <div class="pc-slot open">15:00</div>
+      </div>
+      <div class="pc-fee">
+        <div class="pc-fee-label">İşlem ücreti</div>
+        <div class="pc-fee-amount">+₺9</div>
+      </div>
+      <button class="pc-cta">Randevu Al</button>
+    </div>
+
+    <div class="preview-card side">
+      <div class="pc-icon">⚽</div>
+      <div class="pc-name">Star Halı Saha</div>
+      <div class="pc-cat">Halı Saha · Etimesgut, Ankara</div>
+      <div class="pc-stars">★★★★☆ 4.7</div>
+      <div class="pc-slots">
+        <div class="pc-slot">18:00</div>
+        <div class="pc-slot open">20:00</div>
+        <div class="pc-slot open">22:00</div>
+      </div>
+      <div class="pc-fee">
+        <div class="pc-fee-label">İşlem ücreti</div>
+        <div class="pc-fee-amount">+₺9</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stats-inner">
+    <div><div class="stat-num">50K+</div><div class="stat-label">Aktif kullanıcı</div></div>
+    <div><div class="stat-num">3.200+</div><div class="stat-label">Kayıtlı işletme</div></div>
+    <div><div class="stat-num">180K+</div><div class="stat-label">Tamamlanan randevu</div></div>
+    <div><div class="stat-num">₺9</div><div class="stat-label">Sabit işlem ücreti</div></div>
+  </div>
+</div>
+
+<!-- NASIL ÇALIŞIR -->
+<section class="how" id="nasil">
+  <div class="section-inner">
+    <div class="section-tag">Nasıl Çalışır</div>
+    <h2>4 adımda randevun hazır</h2>
+    <p class="section-sub">Kayıt ol, ara, seç, al. Daha basit olamaz.</p>
+    <div class="how-steps">
+      <div class="how-step">
+        <div class="how-num">01</div>
+        <div class="how-icon">📲</div>
+        <h3>Uygulamayı indir</h3>
+        <p>App Store veya Google Play'den ücretsiz indir, hızla kayıt ol.</p>
+        <div class="how-arrow">→</div>
+      </div>
+      <div class="how-step">
+        <div class="how-num">02</div>
+        <div class="how-icon">🔍</div>
+        <h3>İşletmeyi bul</h3>
+        <p>Konumuna göre yakındaki berber, klinik veya saha listele.</p>
+        <div class="how-arrow">→</div>
+      </div>
+      <div class="how-step">
+        <div class="how-num">03</div>
+        <div class="how-icon">📅</div>
+        <h3>Saat seç</h3>
+        <p>Müsait saatlere bak, sana uygununu seç. Onay anında gelir.</p>
+        <div class="how-arrow">→</div>
+      </div>
+      <div class="how-step">
+        <div class="how-num">04</div>
+        <div class="how-icon">✅</div>
+        <h3>Randevu tamamlandı</h3>
+        <p>₺9 işlem ücreti öde, randevunu cebine al. SMS ile hatırlat.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SEKTÖRLER -->
+<section class="sectors" id="sektorler">
+  <div class="section-inner">
+    <div class="section-tag">Kategoriler</div>
+    <h2>Her işletme, tek uygulama</h2>
+    <p class="section-sub">Hangi hizmete ihtiyacın varsa Slotly'de bul.</p>
+    <div class="sector-grid">
+      <div class="sector-card">
+        <div class="sector-icon">✂️</div>
+        <div class="sector-name">Berber & Kuaför</div>
+        <div class="sector-count">1.200+ işletme</div>
+      </div>
+      <div class="sector-card">
+        <div class="sector-icon">🦷</div>
+        <div class="sector-name">Diş Kliniği</div>
+        <div class="sector-count">480+ klinik</div>
+      </div>
+      <div class="sector-card">
+        <div class="sector-icon">⚽</div>
+        <div class="sector-name">Halı Saha</div>
+        <div class="sector-count">320+ saha</div>
+      </div>
+      <div class="sector-card">
+        <div class="sector-icon">💆</div>
+        <div class="sector-name">Masaj & SPA</div>
+        <div class="sector-count">210+ merkez</div>
+      </div>
+      <div class="sector-card">
+        <div class="sector-icon">🏋️</div>
+        <div class="sector-name">Spor Salonu</div>
+        <div class="sector-count">380+ salon</div>
+      </div>
+      <div class="sector-card">
+        <div class="sector-icon">🐾</div>
+        <div class="sector-name">Veteriner</div>
+        <div class="sector-count">290+ klinik</div>
+      </div>
+      <div class="sector-card">
+        <div class="sector-icon">🔧</div>
+        <div class="sector-name">Oto Servis</div>
+        <div class="sector-count">160+ servis</div>
+      </div>
+      <div class="sector-card">
+        <div class="sector-icon">🏊</div>
+        <div class="sector-name">Yüzme Havuzu</div>
+        <div class="sector-count">90+ tesis</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- İŞLEM ÜCRETİ -->
+<section class="fee-section" id="ucret">
+  <div class="section-inner">
+    <div class="fee-inner">
+      <div class="fee-visual">
+        <p style="font-size:13px;font-weight:700;color:var(--ink-muted);margin-bottom:16px;text-transform:uppercase;letter-spacing:.5px">Randevu Özeti</p>
+        <div class="fee-row">
+          <div class="fee-row-label">🦷 Diş Temizliği</div>
+          <div class="fee-row-value">₺800</div>
+        </div>
+        <div class="fee-row">
+          <div class="fee-row-label">📅 Dr. Ayşe Kaya, 10:30</div>
+          <div class="fee-row-value" style="color:var(--ink-muted);font-weight:500">Onaylandı ✅</div>
+        </div>
+        <div class="fee-row">
+          <div class="fee-row-label">💬 SMS Hatırlatma</div>
+          <div class="fee-row-value" style="color:var(--accent)">Ücretsiz</div>
+        </div>
+        <div class="fee-row">
+          <div class="fee-row-label">🔧 Slotly İşlem Ücreti</div>
+          <div class="fee-row-value" style="color:var(--brand)">₺9</div>
+        </div>
+        <div class="fee-total">
+          <div class="fee-total-label">Bugün ödenen</div>
+          <div class="fee-total-amount">₺9</div>
+        </div>
+        <p style="font-size:12px;color:var(--ink-muted);margin-top:10px;text-align:center">Kalan ₺800 klinikte ödenir</p>
+      </div>
+      <div class="fee-text">
+        <div class="section-tag">Şeffaf Ücret</div>
+        <h2>Sadece ₺9 işlem ücreti</h2>
+        <p>İşletmeler Slotly'yi ücretsiz kullanır. Sen sadece randevu başına sabit ₺9 ödersin — gizli maliyet yok, abonelik yok.</p>
+        <p>Randevuyu iptal edersen, ücret iade edilir.</p>
+        <div class="fee-pill">✓ İade garantisi</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ÖZELLİKLER -->
+<section class="features" id="ozellikler">
+  <div class="section-inner">
+    <div class="section-tag">Özellikler</div>
+    <h2>Kullanıcı için tasarlandı</h2>
+    <p class="section-sub">Uygulamayı açan herkes kolayca randevu alabilsin diye.</p>
+    <div class="feat-grid">
+      <div class="feat-card">
+        <div class="feat-icon">📍</div>
+        <h3>Konuma Göre Ara</h3>
+        <p>Bulunduğun yere en yakın işletmeleri gör. Filtreleme ile sadece açık olanları listele.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">⚡</div>
+        <h3>Anında Onay</h3>
+        <p>Randevun saniyeler içinde onaylanır. İşletmeyi aramana, beklemeye gerek yok.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">💬</div>
+        <h3>SMS Hatırlatma</h3>
+        <p>Randevudan 1 saat önce otomatik SMS. Unutmak imkânsız.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">💳</div>
+        <h3>Kapora Seçeneği</h3>
+        <p>İşletme istiyorsa kapora al, gerisini kapıda öde. Güvenli ödeme altyapısı.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">⭐</div>
+        <h3>Yorum & Puanlama</h3>
+        <p>Randevudan sonra işletmeyi puanla. En iyi yerleri toplulukla keşfet.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🔄</div>
+        <h3>Kolay İptal & Erteleme</h3>
+        <p>Planın değişti mi? Tek dokunuşla iptal et veya farklı saate taşı.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- YORUMLAR -->
+<section class="reviews" id="yorumlar">
+  <div class="section-inner">
+    <div class="section-tag">Kullanıcı Yorumları</div>
+    <h2>Onlar ne diyor?</h2>
+    <div class="review-grid">
+      <div class="review-card">
+        <div class="r-stars">★★★★★</div>
+        <p class="r-text">"Berbere gidecek her seferinde telefonda beklerdim. Slotly ile 30 saniyede randevu aldım. Hayat kurtarıcı."</p>
+        <div class="r-user">
+          <div class="r-avatar" style="background:#7c3aed">SE</div>
+          <div>
+            <div class="r-name">Selim E.</div>
+            <div class="r-sub">Ankara · Berber randevusu</div>
+          </div>
+        </div>
+      </div>
+      <div class="review-card">
+        <div class="r-stars">★★★★★</div>
+        <p class="r-text">"Diş hekimi randevusu almak bu kadar kolay olmamıştı. 9 lira işlem ücreti için aldığım konfor paha biçilemez."</p>
+        <div class="r-user">
+          <div class="r-avatar" style="background:#10b981">NK</div>
+          <div>
+            <div class="r-name">Neslihan K.</div>
+            <div class="r-sub">İstanbul · Diş kliniği</div>
+          </div>
+        </div>
+      </div>
+      <div class="review-card">
+        <div class="r-stars">★★★★★</div>
+        <p class="r-text">"Halı sahayı arkadaşlarla organize etmek artık çok kolay. Hepimiz aynı randevuyu görüyoruz, SMS geliyor."</p>
+        <div class="r-user">
+          <div class="r-avatar" style="background:#f59e0b">BT</div>
+          <div>
+            <div class="r-name">Burak T.</div>
+            <div class="r-sub">İzmir · Halı saha</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="section-inner">
+    <h2>Randevunu saniyeler içinde al</h2>
+    <p>Ücretsiz indir, hemen kullanmaya başla.</p>
+    <div class="store-badges">
+      <div class="store-badge"><span class="si">🍎</span><div><div style="font-size:10px;opacity:.6">App Store'dan indir</div><div>iPhone için</div></div></div>
+      <div class="store-badge"><span class="si">🤖</span><div><div style="font-size:10px;opacity:.6">Google Play'den indir</div><div>Android için</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="foot-logo">Slotly<span>.</span></div>
+  <p style="margin-top:6px">© 2025 Slotly. Tüm hakları saklıdır.</p>
+  <div class="foot-links">
+    <a href="#">Gizlilik</a>
+    <a href="#">Kullanım Koşulları</a>
+    <a href="#">İletişim</a>
+    <a href="index.html">İşletmeler için →</a>
+  </div>
+</footer>
+
+</body>
+</html>
